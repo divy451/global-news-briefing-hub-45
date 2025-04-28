@@ -1,4 +1,3 @@
-
 export interface Article {
   id: string;
   title: string;
@@ -21,4 +20,13 @@ export interface BreakingNewsItem {
   id: string;
   title: string;
   path: string;
+}
+
+export interface AdminArticleUpdate {
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  category: string;
+  author: string;
 }
