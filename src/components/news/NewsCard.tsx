@@ -1,0 +1,59 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent } from "@/components/ui/card";
+
+interface NewsCardProps {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  date: string;
+  path: string;
+  featured?: boolean;
+  horizontal?: boolean;
+  compact?: boolean;
+}
+
+const NewsCard: React.FC<NewsCardProps> = ({ 
+  title, 
+  excerpt, 
+  image, 
+  category, 
+  date, 
+  path, 
+  featured = false,
+  horizontal = false,
+  compact = false
+}) => {
+  return (
+    <Card className={`news-card h-full ${horizontal ? 'flex flex-col md:flex-row' : ''} ${featured ? 'border-b-2 border-news-accent' : ''}`}>
+      <div className={`relative ${horizontal ? 'md:w-1/3' : 'w-full'}`}>
+        <img 
+          src={image} 
+          alt={title}
+          className={`w-full h-48 md:h-auto object-cover ${horizontal ? 'md:h-full' : ''}`}
+        />
+        {category && (
+          <span className="absolute top-0 left-0 bg-news-accent text-white px-2 py-1 text-xs font-medium">
+            {category}
+          </span>
+        )}
+      </div>
+      <CardContent className={`p-4 ${horizontal ? 'md:w-2/3' : ''}`}>
+        <Link to={path}>
+          <h3 className={`font-bold mb-2 ${featured ? 'text-xl md:text-2xl' : compact ? 'text-base' : 'text-lg'} hover:text-news-accent transition-colors`}>
+            {title}
+          </h3>
+        </Link>
+        {!compact && (
+          <p className="text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+        )}
+        <div className="text-gray-500 text-sm">{date}</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default NewsCard;
