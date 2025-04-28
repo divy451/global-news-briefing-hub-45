@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Article, Category, BreakingNewsItem } from "../types/news";
 import { 
@@ -99,3 +98,15 @@ export const apiClient = {
   fetchCategoryArticles,
   fetchTrendingArticles
 };
+
+// Add the articles query hook for the admin portal
+export function useNewsData() {
+  return useQuery({
+    queryKey: ["articles"],
+    queryFn: async () => {
+      // Simulating API delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return [...worldNews, ...technologyNews, ...businessNews, ...sportsNews];
+    },
+  });
+}

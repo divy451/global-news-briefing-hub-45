@@ -1,6 +1,15 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   Table,
   TableBody,
@@ -12,9 +21,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNewsData } from '@/hooks/useNewsData';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { useToast } from "@/components/ui/use-toast";
 
 const AdminPortal: React.FC = () => {
   const { data: articles, isLoading } = useNewsData();
+  const { toast } = useToast();
+
+  const handleDelete = (id: string) => {
+    toast({
+      title: "Not implemented",
+      description: "Delete functionality will be added with backend integration",
+    });
+  };
 
   if (isLoading) {
     return (
@@ -29,9 +47,23 @@ const AdminPortal: React.FC = () => {
   return (
     <MainLayout>
       <div className="container py-12">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink as={Link} to="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Admin Portal</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Content Management</h1>
-          <Button>Add New Article</Button>
+          <Link to="/admin/new">
+            <Button>Add New Article</Button>
+          </Link>
         </div>
 
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -53,8 +85,16 @@ const AdminPortal: React.FC = () => {
                   <TableCell>{article.date}</TableCell>
                   <TableCell>{article.author}</TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button variant="outline" size="sm">Edit</Button>
-                    <Button variant="destructive" size="sm">Delete</Button>
+                    <Link to={`/admin/edit/${article.id}`}>
+                      <Button variant="outline" size="sm">Edit</Button>
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => handleDelete(article.id)}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
