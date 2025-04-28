@@ -28,8 +28,8 @@ const Header = () => {
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
           <div className="flex space-x-4">
+            <Link to="/admin" className="text-xs md:text-sm hover:underline">Admin Portal</Link>
             <Link to="/signin" className="text-xs md:text-sm hover:underline">Sign In</Link>
-            <Link to="/subscribe" className="text-xs md:text-sm hover:underline">Subscribe</Link>
           </div>
         </div>
       </div>
@@ -107,6 +107,15 @@ const Header = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link 
+                  to="/admin"
+                  className="text-gray-600 hover:text-news-accent font-medium transition-colors block"
+                  onClick={toggleMenu}
+                >
+                  Admin Portal
+                </Link>
+              </li>
             </ul>
             
             <Button className="w-full bg-news-accent hover:bg-red-700 mb-2">Subscribe</Button>

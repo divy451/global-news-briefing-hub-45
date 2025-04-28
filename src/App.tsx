@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import CategoryPage from "./pages/CategoryPage";
 import ArticlePage from "./pages/ArticlePage";
 import AdminPortal from "./pages/AdminPortal";
+import NewArticle from "./pages/NewArticle";
+import EditArticle from "./pages/EditArticle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/article/:slug" element={<ArticlePage />} />
           <Route path="/admin" element={<AdminPortal />} />
+          <Route path="/admin/new" element={<NewArticle />} />
+          <Route path="/admin/edit/:id" element={<EditArticle />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
