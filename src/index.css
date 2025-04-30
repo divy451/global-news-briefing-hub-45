@@ -111,6 +111,24 @@
     @apply text-gray-300 border-red-400;
   }
   
+  /* Dark mode text improvements for all content */
+  .dark p, 
+  .dark span, 
+  .dark li,
+  .dark label,
+  .dark .text-gray-600 {
+    @apply text-gray-300;
+  }
+  
+  /* Specific dark mode improvements for admin pages */
+  .dark .bg-white {
+    @apply bg-gray-800;
+  }
+  
+  .dark .hover\:bg-gray-50:hover {
+    @apply hover:bg-gray-700;
+  }
+  
   /* Better tap targets for mobile */
   @media (max-width: 640px) {
     button, a.btn, input[type="button"] {
