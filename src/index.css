@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -83,15 +85,53 @@
   p, span, a, button {
     @apply font-sans;
   }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Define custom classes for news cards and hover effects */
 @layer components {
   .news-card {
-    @apply rounded-md overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300;
+    @apply rounded-md overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .news-card img {
+    @apply transition-transform duration-300;
+  }
+
+  .news-card:hover img {
+    @apply scale-105;
   }
   
   .article-link {
     @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-news-accent after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+
+  .animated-bg {
+    @apply relative overflow-hidden;
+  }
+
+  .animated-bg::before {
+    @apply content-[''] absolute top-0 left-[-100%] w-[100%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-25deg] animate-pulse-slow;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  
+  .category-tab {
+    @apply relative px-4 py-2 transition-colors duration-200;
+  }
+  
+  .category-tab::after {
+    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-news-accent scale-x-0 transition-transform duration-200 origin-bottom-left;
+  }
+  
+  .category-tab:hover::after,
+  .category-tab.active::after {
+    @apply scale-x-100;
   }
 }

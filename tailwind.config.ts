@@ -64,8 +64,8 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				news: {
-					"primary": "#0A1128",
-					"accent": "#C8102E",
+					"primary": "#2A4365", // Changed from dark blue to navy
+					"accent": "#805AD5",  // Changed from red to purple
 					"light": "#F5F5F5",
 					"medium": "#E0E0E0",
 					"dark": "#757575"
@@ -105,17 +105,59 @@ export default {
 						transform: "translateY(10px)"
 					}
 				},
+				"pulse-slow": {
+					"0%, 100%": { opacity: "1" },
+					"50%": { opacity: "0.7" }
+				},
+				"slide-in-bottom": {
+					"0%": {
+						transform: "translateY(20px)",
+						opacity: "0"
+					},
+					"100%": {
+						transform: "translateY(0)",
+						opacity: "1"
+					}
+				},
+				"slide-in-left": {
+					"0%": {
+						transform: "translateX(-20px)",
+						opacity: "0"
+					},
+					"100%": {
+						transform: "translateX(0)",
+						opacity: "1"
+					}
+				},
+				"slide-in-right": {
+					"0%": {
+						transform: "translateX(20px)",
+						opacity: "0"
+					},
+					"100%": {
+						transform: "translateX(0)",
+						opacity: "1"
+					}
+				},
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"fade-in": "fade-in 0.3s ease-out",
 				"fade-out": "fade-out 0.3s ease-out",
+				"pulse-slow": "pulse-slow 3s ease-in-out infinite",
+				"slide-in-bottom": "slide-in-bottom 0.4s ease-out",
+				"slide-in-left": "slide-in-left 0.4s ease-out",
+				"slide-in-right": "slide-in-right 0.4s ease-out",
 			},
 			fontFamily: {
-				serif: ['Georgia', 'Times New Roman', 'serif'],
-				sans: ['Helvetica', 'Arial', 'sans-serif'],
+				serif: ['Merriweather', 'Georgia', 'Times New Roman', 'serif'],
+				sans: ['Rubik', 'Helvetica', 'Arial', 'sans-serif'],
 			},
+			transitionProperty: {
+				'height': 'height',
+				'spacing': 'margin, padding',
+			}
 		},
 	},
 	plugins: [require("tailwindcss-animate")],

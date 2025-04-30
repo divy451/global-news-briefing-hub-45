@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import BreakingNews from '@/components/news/BreakingNews';
 import FeaturedNews from '@/components/news/FeaturedNews';
@@ -21,6 +21,26 @@ const Index: React.FC = () => {
   const { data: technologyNewsData } = useCategoryArticles('Technology');
   const { data: businessNewsData } = useCategoryArticles('Business');
   const { data: sportsNewsData } = useCategoryArticles('Sports');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-slide-in-bottom');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.lazy-animate').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [worldNewsData, technologyNewsData, businessNewsData, sportsNewsData]);
 
   return (
     <MainLayout>
@@ -44,50 +64,58 @@ const Index: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           <div className="lg:col-span-2">
             {/* Ad Banner */}
-            <div className="mb-8">
+            <div className="mb-8 lazy-animate">
               <Advertisement type="banner" />
             </div>
             
             {/* World News */}
-            {worldNewsData && (
-              <CategoryNews 
-                category={{ name: "World", path: "/category/world" }}
-                articles={worldNewsData}
-              />
-            )}
+            <div className="lazy-animate">
+              {worldNewsData && (
+                <CategoryNews 
+                  category={{ name: "World", path: "/category/world" }}
+                  articles={worldNewsData}
+                />
+              )}
+            </div>
             
             {/* Technology News */}
-            {technologyNewsData && (
-              <CategoryNews 
-                category={{ name: "Technology", path: "/category/technology" }}
-                articles={technologyNewsData}
-              />
-            )}
+            <div className="lazy-animate">
+              {technologyNewsData && (
+                <CategoryNews 
+                  category={{ name: "Technology", path: "/category/technology" }}
+                  articles={technologyNewsData}
+                />
+              )}
+            </div>
             
             {/* Ad Banner */}
-            <div className="py-8">
+            <div className="py-8 lazy-animate">
               <Advertisement type="banner" />
             </div>
             
             {/* Business News */}
-            {businessNewsData && (
-              <CategoryNews 
-                category={{ name: "Business", path: "/category/business" }}
-                articles={businessNewsData}
-              />
-            )}
+            <div className="lazy-animate">
+              {businessNewsData && (
+                <CategoryNews 
+                  category={{ name: "Business", path: "/category/business" }}
+                  articles={businessNewsData}
+                />
+              )}
+            </div>
             
             {/* Sports News */}
-            {sportsNewsData && (
-              <CategoryNews 
-                category={{ name: "Sports", path: "/category/sports" }}
-                articles={sportsNewsData}
-              />
-            )}
+            <div className="lazy-animate">
+              {sportsNewsData && (
+                <CategoryNews 
+                  category={{ name: "Sports", path: "/category/sports" }}
+                  articles={sportsNewsData}
+                />
+              )}
+            </div>
           </div>
           
           {/* Sidebar */}
-          <div>
+          <div className="lazy-animate">
             <Sidebar />
           </div>
         </div>

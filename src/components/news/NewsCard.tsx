@@ -28,8 +28,8 @@ const NewsCard: React.FC<NewsCardProps> = ({
   compact = false
 }) => {
   return (
-    <Card className={`news-card h-full ${horizontal ? 'flex flex-col md:flex-row' : ''} ${featured ? 'border-b-2 border-news-accent' : ''}`}>
-      <div className={`relative ${horizontal ? 'md:w-1/3' : 'w-full'}`}>
+    <Card className={`news-card h-full ${horizontal ? 'flex flex-col md:flex-row' : ''} ${featured ? 'border-l-4 border-news-accent' : ''}`}>
+      <div className={`relative overflow-hidden ${horizontal ? 'md:w-1/3' : 'w-full'}`}>
         <img 
           src={image} 
           alt={title}
@@ -40,6 +40,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
             {category}
           </span>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
       </div>
       <CardContent className={`p-4 ${horizontal ? 'md:w-2/3' : ''}`}>
         <Link to={path}>
