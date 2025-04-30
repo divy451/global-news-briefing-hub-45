@@ -18,10 +18,9 @@ const AdminLogin: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Admin credentials (in a real app, this would be handled securely on the backend)
-    // Username: admin, Password: admin123
+    // Admin credentials
     setTimeout(() => {
-      if (username === 'admin' && password === 'admin123') {
+      if (username === 'prat754' && password === '#@Pg21pa') {
         // Set a token in localStorage to simulate authentication
         localStorage.setItem('admin_token', 'admin_authenticated');
         
@@ -47,7 +46,7 @@ const AdminLogin: React.FC = () => {
       <div className="container max-w-md mx-auto py-16">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold">Admin Login</h1>
-          <p className="text-gray-600 mt-2">Sign in to access the admin dashboard</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to access the admin dashboard</p>
         </div>
         
         <Card className="shadow-lg animate-fade-in">

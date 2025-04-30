@@ -27,7 +27,7 @@ const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
   }, [news.length]);
 
   return (
-    <div className="bg-red-600 text-white py-2 px-4">
+    <div className="bg-red-600 dark:bg-red-800 text-white py-2 px-4">
       <div className="container">
         <div className="flex items-center">
           <div className="font-bold mr-3 whitespace-nowrap">BREAKING:</div>

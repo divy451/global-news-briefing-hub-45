@@ -162,8 +162,23 @@ export default {
 			transitionProperty: {
 				'height': 'height',
 				'spacing': 'margin, padding',
-			}
+			},
+			typography: {
+				DEFAULT: {
+					css: {
+						a: {
+							color: '#E53E3E',
+							'&:hover': {
+								color: '#C53030',
+							},
+						},
+					},
+				},
+			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require('@tailwindcss/typography'),
+	],
 } satisfies Config;

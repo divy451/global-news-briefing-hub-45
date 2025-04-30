@@ -75,7 +75,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -95,11 +95,11 @@
 /* Define custom classes for news cards and hover effects */
 @layer components {
   .news-card {
-    @apply rounded-md overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply rounded-md overflow-hidden shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white dark:bg-gray-800;
   }
   
   .news-card img {
-    @apply transition-transform duration-300;
+    @apply transition-transform duration-300 object-cover w-full h-full;
   }
 
   .news-card:hover img {
@@ -134,4 +134,9 @@
   .category-tab.active::after {
     @apply scale-x-100;
   }
+}
+
+/* Dark mode specific animations */
+.dark .animated-bg::before {
+  @apply bg-gradient-to-r from-transparent via-black/30 to-transparent;
 }
