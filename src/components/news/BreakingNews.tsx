@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 interface BreakingNewsProps {
   news: {
@@ -13,6 +14,7 @@ interface BreakingNewsProps {
 const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,7 +36,9 @@ const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
           <div className="overflow-hidden flex-1">
             <div className={`transition-all duration-700 ${isAnimating ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>
               <Link to={news[currentIndex].path} className="hover:underline inline-block">
-                {news[currentIndex].title}
+                {isMobile && news[currentIndex].title.length > 60 
+                  ? `${news[currentIndex].title.substring(0, 60)}...` 
+                  : news[currentIndex].title}
               </Link>
             </div>
           </div>

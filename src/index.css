@@ -90,6 +90,37 @@
   html {
     scroll-behavior: smooth;
   }
+  
+  /* Better dark mode text readability */
+  .dark .prose {
+    @apply text-gray-100;
+  }
+  
+  .dark .prose p, 
+  .dark .prose li,
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6 {
+    @apply text-gray-100;
+  }
+  
+  .dark .prose blockquote {
+    @apply text-gray-300 border-red-400;
+  }
+  
+  /* Better tap targets for mobile */
+  @media (max-width: 640px) {
+    button, a.btn, input[type="button"] {
+      @apply py-2.5 px-4 min-h-[44px];
+    }
+    
+    .nav-item {
+      @apply py-2;
+    }
+  }
 }
 
 /* Define custom classes for news cards and hover effects */
@@ -134,9 +165,45 @@
   .category-tab.active::after {
     @apply scale-x-100;
   }
+  
+  /* Responsive improvements */
+  .article-container {
+    @apply px-4 md:px-0;
+  }
+  
+  /* Enhanced mobile experience */
+  .mobile-friendly-text {
+    @apply text-base leading-relaxed;
+  }
+  
+  .mobile-tap-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
 }
 
 /* Dark mode specific animations */
 .dark .animated-bg::before {
   @apply bg-gradient-to-r from-transparent via-black/30 to-transparent;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
