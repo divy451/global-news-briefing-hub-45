@@ -64,8 +64,8 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				news: {
-					"primary": "#2A4365", // Changed from dark blue to navy
-					"accent": "#805AD5",  // Changed from red to purple
+					"primary": "#2A4365", // Navy blue
+					"accent": "#E53E3E",  // Red accent
 					"light": "#F5F5F5",
 					"medium": "#E0E0E0",
 					"dark": "#757575"
@@ -139,6 +139,10 @@ export default {
 						opacity: "1"
 					}
 				},
+				"bounce-subtle": {
+					"0%, 100%": { transform: "translateY(0)" },
+					"50%": { transform: "translateY(-5px)" }
+				}
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
@@ -149,6 +153,7 @@ export default {
 				"slide-in-bottom": "slide-in-bottom 0.4s ease-out",
 				"slide-in-left": "slide-in-left 0.4s ease-out",
 				"slide-in-right": "slide-in-right 0.4s ease-out",
+				"bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
 			},
 			fontFamily: {
 				serif: ['Merriweather', 'Georgia', 'Times New Roman', 'serif'],

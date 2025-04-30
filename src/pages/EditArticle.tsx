@@ -23,6 +23,7 @@ const EditArticle: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [article, setArticle] = useState<Article | null>(null);
 
   useEffect(() => {
@@ -62,11 +63,17 @@ const EditArticle: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Not implemented",
-      description: "Article updating will be added with backend integration",
-    });
-    navigate('/admin');
+    setIsSubmitting(true);
+    
+    // Simulate article update
+    setTimeout(() => {
+      toast({
+        title: "Article updated",
+        description: "Your article has been successfully updated.",
+      });
+      navigate('/admin');
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   if (isLoading) {
@@ -119,40 +126,76 @@ const EditArticle: React.FC = () => {
           <h1 className="text-3xl font-bold">Edit Article</h1>
         </div>
 
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 animate-fade-in">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label htmlFor="title" className="text-sm font-medium">Title</label>
-              <Input id="title" defaultValue={article.title} required />
+              <Input 
+                id="title" 
+                defaultValue={article.title} 
+                required 
+                className="focus:ring-red-600 transition-all"
+              />
             </div>
             
             <div className="space-y-2">
               <label htmlFor="category" className="text-sm font-medium">Category</label>
-              <Input id="category" defaultValue={article.category} required />
+              <Input 
+                id="category" 
+                defaultValue={article.category} 
+                required 
+                className="focus:ring-red-600 transition-all"
+              />
             </div>
             
             <div className="space-y-2">
               <label htmlFor="excerpt" className="text-sm font-medium">Excerpt</label>
-              <Textarea id="excerpt" defaultValue={article.excerpt} required />
+              <Textarea 
+                id="excerpt" 
+                defaultValue={article.excerpt} 
+                required 
+                className="focus:ring-red-600 transition-all"
+              />
             </div>
             
             <div className="space-y-2">
               <label htmlFor="content" className="text-sm font-medium">Content</label>
-              <Textarea id="content" defaultValue={article.content} className="min-h-[200px]" required />
+              <Textarea 
+                id="content" 
+                defaultValue={article.content} 
+                className="min-h-[200px] focus:ring-red-600 transition-all"
+                required 
+              />
             </div>
             
             <div className="space-y-2">
               <label htmlFor="image" className="text-sm font-medium">Image URL</label>
-              <Input id="image" defaultValue={article.image} required />
+              <Input 
+                id="image" 
+                defaultValue={article.image} 
+                required 
+                className="focus:ring-red-600 transition-all"
+              />
             </div>
             
             <div className="space-y-2">
               <label htmlFor="author" className="text-sm font-medium">Author</label>
-              <Input id="author" defaultValue={article.author} required />
+              <Input 
+                id="author" 
+                defaultValue={article.author} 
+                required 
+                className="focus:ring-red-600 transition-all"
+              />
             </div>
             
             <div className="flex space-x-2 pt-4">
-              <Button type="submit">Update Article</Button>
+              <Button 
+                type="submit" 
+                className="bg-red-600 hover:bg-red-700 transition-colors"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Updating...' : 'Update Article'}
+              </Button>
               <Link to="/admin">
                 <Button variant="outline" type="button">Cancel</Button>
               </Link>

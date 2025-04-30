@@ -28,11 +28,11 @@ const CategoryNews: React.FC<CategoryNewsProps> = ({ category, articles }) => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold relative">
             {category.name}
-            <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-news-accent"></span>
+            <span className="absolute -bottom-2 left-0 w-1/3 h-1 bg-red-600"></span>
           </h2>
           <Link 
             to={category.path} 
-            className="text-news-accent hover:underline font-medium transition-all duration-300 hover:pl-2"
+            className="text-red-600 hover:underline font-medium transition-all duration-300 hover:text-red-700 hover:translate-x-1"
           >
             View All
           </Link>
@@ -42,7 +42,7 @@ const CategoryNews: React.FC<CategoryNewsProps> = ({ category, articles }) => {
           {articles.map((article, index) => (
             <div 
               key={article.id}
-              className="animate-slide-in-bottom"
+              className="animate-slide-in-bottom hover-lift"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <NewsCard 

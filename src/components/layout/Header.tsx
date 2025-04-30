@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Menu, X, User } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -22,6 +23,10 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleAdminClick = () => {
+    navigate('/admin');
+  };
 
   const categories = [
     { name: "World", path: "/category/world" },
@@ -42,8 +47,10 @@ const Header = () => {
             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
           <div className="flex space-x-4 animate-slide-in-right">
-            <Link to="/admin" className="text-xs md:text-sm hover:underline hover:text-news-accent transition-colors">Admin Portal</Link>
-            <Link to="/signin" className="text-xs md:text-sm hover:underline hover:text-news-accent transition-colors">Sign In</Link>
+            <Link to="/admin/login" className="text-xs md:text-sm hover:underline hover:text-red-300 transition-colors flex items-center gap-1">
+              <User size={14} />
+              <span>Admin Login</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -51,9 +58,9 @@ const Header = () => {
       <div className="container py-4 transition-all duration-300">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center group animate-slide-in-left">
-            <h1 className="text-2xl md:text-4xl font-bold text-news-primary relative z-10 group-hover:text-news-accent transition-colors duration-300">
-              <span>Nexus</span>
-              <span className="text-news-accent group-hover:text-news-primary transition-colors duration-300">Vista</span>
+            <h1 className="text-2xl md:text-4xl font-bold text-news-primary relative z-10 group-hover:text-red-600 transition-colors duration-300">
+              <span>Briefly</span>
+              <span className="text-red-600 group-hover:text-news-primary transition-colors duration-300">Global</span>
             </h1>
           </Link>
 
@@ -62,7 +69,7 @@ const Header = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="pl-10 pr-4 py-1.5 w-full border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-news-accent transition-all duration-300"
+                className="pl-10 pr-4 py-1.5 w-full border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-600 transition-all duration-300"
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
               />
@@ -87,7 +94,7 @@ const Header = () => {
               <li key={category.name}>
                 <Link 
                   to={category.path}
-                  className="category-tab text-gray-600 hover:text-news-accent font-medium transition-colors"
+                  className="category-tab text-gray-600 hover:text-red-600 font-medium transition-colors"
                 >
                   {category.name}
                 </Link>
@@ -105,7 +112,7 @@ const Header = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-news-accent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
@@ -115,7 +122,7 @@ const Header = () => {
                 <li key={category.name} className={`animate-fade-in`} style={{animationDelay: `${index * 50}ms`}}>
                   <Link 
                     to={category.path}
-                    className="text-gray-600 hover:text-news-accent font-medium transition-colors block py-2"
+                    className="text-gray-600 hover:text-red-600 font-medium transition-colors block py-2"
                     onClick={toggleMenu}
                   >
                     {category.name}
@@ -124,21 +131,14 @@ const Header = () => {
               ))}
               <li className="animate-fade-in" style={{animationDelay: `${categories.length * 50}ms`}}>
                 <Link 
-                  to="/admin"
-                  className="text-gray-600 hover:text-news-accent font-medium transition-colors block py-2"
+                  to="/admin/login"
+                  className="text-gray-600 hover:text-red-600 font-medium transition-colors block py-2"
                   onClick={toggleMenu}
                 >
-                  Admin Portal
+                  Admin Login
                 </Link>
               </li>
             </ul>
-            
-            <button 
-              onClick={toggleMenu} 
-              className="w-full bg-news-primary hover:bg-news-accent text-white py-2 rounded-md transition-colors"
-            >
-              Sign In
-            </button>
           </div>
         </div>
       )}

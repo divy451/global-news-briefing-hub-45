@@ -9,9 +9,11 @@ import Index from "./pages/Index";
 import CategoryPage from "./pages/CategoryPage";
 import ArticlePage from "./pages/ArticlePage";
 import AdminPortal from "./pages/AdminPortal";
+import AdminLogin from "./pages/AdminLogin"; 
 import NewArticle from "./pages/NewArticle";
 import EditArticle from "./pages/EditArticle";
 import NotFound from "./pages/NotFound";
+import AdminRouteGuard from "./components/auth/AdminRouteGuard";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +27,15 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/article/:slug" element={<ArticlePage />} />
-          <Route path="/admin" element={<AdminPortal />} />
-          <Route path="/admin/new" element={<NewArticle />} />
-          <Route path="/admin/edit/:id" element={<EditArticle />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          
+          {/* Protected admin routes */}
+          <Route element={<AdminRouteGuard />}>
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/admin/new" element={<NewArticle />} />
+            <Route path="/admin/edit/:id" element={<EditArticle />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
