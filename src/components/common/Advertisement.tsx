@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface AdvertisementProps {
   type: 'banner' | 'square' | 'skyscraper';
+  adSlot?: string;
 }
 
-const Advertisement: React.FC<AdvertisementProps> = ({ type }) => {
+const Advertisement: React.FC<AdvertisementProps> = ({ type, adSlot }) => {
   const getAdSize = () => {
     switch (type) {
       case 'banner':
@@ -19,13 +19,39 @@ const Advertisement: React.FC<AdvertisementProps> = ({ type }) => {
     }
   };
 
-  // This would normally be connected to Google AdSense
-  return (
-    <div className={`bg-news-light border border-dashed border-news-dark flex items-center justify-center w-full ${getAdSize()}`}>
-      <div className="text-center">
-        <p className="text-news-dark font-medium">Advertisement</p>
-        <p className="text-xs text-gray-500">Your ad could be here</p>
+  useEffect(() => {
+    if (adSlot) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        console.log(`Advertisement (${type}): AdSense ad initialized, slot: ${adSlot}`);
+      } catch (error) {
+        console.error(`Advertisement (${type}): AdSense ad error:`, error);
+      }
+    }
+  }, [adSlot, type]);
+
+  if (!adSlot) {
+    // Fallback to placeholder if no adSlot provided
+    return (
+      <div className={`bg-news-light border border-dashed border-news-dark flex items-center justify-center w-full ${getAdSize()}`}>
+        <div className="text-center">
+          <p className="text-news-dark font-medium">Advertisement</p>
+          <p className="text-xs text-gray-500">Your ad could be here</p>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className={`w-full ${getAdSize()}`}>
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-8618999712463527"
+        data-ad-slot={adSlot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      ></ins>
     </div>
   );
 };

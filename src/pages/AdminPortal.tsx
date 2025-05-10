@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -19,32 +18,137 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useNewsData } from '@/hooks/useNewsData';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useToast } from "@/components/ui/use-toast";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+interface Article {
+  id: string; // Note: Backend might return '_id' instead of 'id'
+  title: string;
+  category: string;
+  date: string;
+  author: string;
+  content: string;
+  excerpt: string;
+  image: string;
+  isBreaking: boolean;
+}
+
+const updateArticleBreaking = async ({ id, article }: { id: string; article: Article }) => {
+  const token = localStorage.getItem('admin_token');
+  const response = await fetch(`http://localhost:5000/api/news/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: article.title,
+      content: article.content,
+      category: article.category,
+      author: article.author,
+      excerpt: article.excerpt,
+      image: article.image,
+      isBreaking: article.isBreaking,
+    }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to update article');
+  }
+  return response.json();
+};
 
 const AdminPortal: React.FC = () => {
-  const { data: articles, isLoading } = useNewsData();
+  const { data: articles, isLoading, error } = useNewsData();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: updateArticleBreaking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+      toast({ title: "Article updated successfully" });
+    },
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to update article';
+      toast({ title: "Failed to update article", description: message, variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const token = localStorage.getItem('admin_token');
+      if (!token) throw new Error('No admin token found');
+      console.log('Attempting to delete article:', id, 'with token:', token);
+      const response = await fetch(`http://localhost:5000/api/news/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        console.error('Delete failed:', data.error || response.statusText, 'Status:', response.status);
+        throw new Error(data.error || `Failed to delete article: ${response.status}`);
+      }
+      console.log('Delete successful for article:', id);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['articles'] });
+      toast({
+        title: "Article deleted",
+        description: "The article was successfully deleted",
+      });
+    },
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to delete article';
+      console.error('Delete error:', message);
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
+    },
+  });
 
   useEffect(() => {
-    // Check authentication on component mount
     const token = localStorage.getItem('admin_token');
-    if (token !== 'admin_authenticated') {
+    console.log('AdminPortal: Token check:', token);
+    if (!token) {
+      console.log('AdminPortal: No token, redirecting to login');
+      toast({
+        title: "Unauthorized",
+        description: "Please log in to access the admin portal",
+        variant: "destructive",
+      });
       navigate('/admin/login');
     }
-  }, [navigate]);
-
-  const handleDelete = (id: string) => {
-    toast({
-      title: "Article deleted",
-      description: "The article was successfully deleted",
-    });
-  };
+    console.log('AdminPortal: Articles received:', articles);
+    // Log article IDs to diagnose key warning
+    if (articles) {
+      console.log('AdminPortal: Article IDs:', articles.map((a: Article) => a.id));
+      // Check for duplicate or missing IDs
+      const ids = articles.map((a: Article) => a.id);
+      const uniqueIds = new Set(ids);
+      console.log('AdminPortal: Unique IDs count:', uniqueIds.size, 'Total IDs:', ids.length);
+      if (uniqueIds.size < ids.length) {
+        console.warn('AdminPortal: Duplicate IDs detected in articles');
+      }
+      if (ids.some(id => !id)) {
+        console.warn('AdminPortal: Missing or undefined IDs detected in articles');
+      }
+    }
+  }, [navigate, toast, articles]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
+    console.log('AdminPortal: Logged out, redirecting to login');
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
@@ -57,6 +161,16 @@ const AdminPortal: React.FC = () => {
       <MainLayout>
         <div className="container py-12">
           <LoadingSpinner />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container py-12">
+          <p className="text-red-600">Failed to load articles: {error.message}</p>
         </div>
       </MainLayout>
     );
@@ -90,40 +204,56 @@ const AdminPortal: React.FC = () => {
         </div>
 
         <div className="bg-white shadow-md rounded-lg overflow-hidden animate-fade-in">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {articles?.map((article) => (
-                <TableRow key={article.id} className="hover:bg-gray-50 transition-colors">
-                  <TableCell className="font-medium">{article.title}</TableCell>
-                  <TableCell>{article.category}</TableCell>
-                  <TableCell>{article.date}</TableCell>
-                  <TableCell>{article.author}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Link to={`/admin/edit/${article.id}`}>
-                      <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors">Edit</Button>
-                    </Link>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => handleDelete(article.id)}
-                      className="bg-red-600 hover:bg-red-700 transition-colors"
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+          {articles?.length === 0 ? (
+            <p className="p-4 text-gray-600">No articles found. Add a new article to get started.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Author</TableHead>
+                  <TableHead>Breaking News</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {articles?.map((article: Article, index: number) => (
+                  <TableRow 
+                    key={article.id || `article-${index}`} 
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <TableCell className="font-medium">{article.title}</TableCell>
+                    <TableCell>{article.category}</TableCell>
+                    <TableCell>{new Date(article.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{article.author || 'Unknown'}</TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={article.isBreaking}
+                        onCheckedChange={(checked) =>
+                          mutation.mutate({ id: article.id, article: { ...article, isBreaking: checked } })
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Link to={`/admin/edit/${article.id}`}>
+                        <Button variant="outline" size="sm" className="hover:bg-gray-100 transition-colors">Edit</Button>
+                      </Link>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(article.id)}
+                        className="bg-red-600 hover:bg-red-700 transition-colors"
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
       </div>
     </MainLayout>

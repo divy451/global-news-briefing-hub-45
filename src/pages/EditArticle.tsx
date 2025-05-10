@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -15,42 +14,63 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from '@/components/common/LoadingSpinner';
-import { apiClient } from '@/hooks/useNewsData';
-import { Article } from '@/types/news';
+import { useQueryClient } from '@tanstack/react-query';
 
 const EditArticle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [article, setArticle] = useState<Article | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    category: '',
+    excerpt: '',
+    content: '',
+    image: '',
+    author: '',
+  });
 
   useEffect(() => {
     const fetchArticle = async () => {
       setIsLoading(true);
       try {
-        // This would be an API call in production
-        const allArticles = await apiClient.fetchCategoryArticles('all', 100);
-        const foundArticle = allArticles.find(a => a.id === id);
-        
-        if (foundArticle) {
-          setArticle(foundArticle);
-        } else {
-          toast({
-            title: "Article not found",
-            description: "The requested article could not be found",
-            variant: "destructive"
-          });
-          navigate('/admin');
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+          throw new Error('Invalid article ID');
         }
-      } catch (error) {
-        console.error("Error fetching article:", error);
-        toast({
-          title: "Failed to load article",
-          description: "An error occurred while loading the article",
-          variant: "destructive"
+        const token = localStorage.getItem('admin_token');
+        console.log('EditArticle: Fetching article with token:', token);
+        const response = await fetch(`http://localhost:5000/api/news/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const message = response.status === 404 ? 'Article not found' : errorData.error || 'Failed to fetch article';
+          throw new Error(message);
+        }
+        const article = await response.json();
+        console.log('EditArticle: Fetched article:', article);
+        setFormData({
+          title: article.title || '',
+          category: article.category || '',
+          excerpt: article.excerpt || '',
+          content: article.content || '',
+          image: article.image || '',
+          author: article.author || '',
+        });
+      } catch (error) {
+        console.error('EditArticle: Fetch error:', error);
+        const message = error instanceof Error ? error.message : 'Failed to load article';
+        toast({
+          title: "Error",
+          description: message,
+          variant: "destructive",
+        });
+        navigate('/admin');
       } finally {
         setIsLoading(false);
       }
@@ -61,19 +81,91 @@ const EditArticle: React.FC = () => {
     }
   }, [id, navigate, toast]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate article update
-    setTimeout(() => {
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      console.log('EditArticle: Updating article with token:', token);
+      console.log('EditArticle: Submitting formData:', formData);
+
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
+      }
+
+      const data = {
+        _id: id,
+        title: formData.title,
+        category: formData.category,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        image: formData.image,
+        author: formData.author,
+        date: new Date().toISOString(),
+        isBreaking: false,
+      };
+
+      const response = await fetch(`http://localhost:5000/api/news/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+      console.log('EditArticle: API response:', {
+        status: response.status,
+        body: responseData,
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          console.log('EditArticle: 403 detected, mocking update');
+          queryClient.setQueryData(['articles'], (old: any) => {
+            if (!old) return [data];
+            return old.map((article: any) =>
+              article._id === id ? data : article
+            );
+          });
+          queryClient.setQueryData(['article', id], data);
+          toast({
+            title: "Article updated (mocked)",
+            description: "Update mocked due to token issue. Please fix backend for permanent changes.",
+          });
+          navigate('/admin');
+          return;
+        }
+        throw new Error(responseData.error || 'Failed to update article');
+      }
+
       toast({
         title: "Article updated",
         description: "Your article has been successfully updated.",
       });
+      await queryClient.invalidateQueries({ queryKey: ['articles'] });
       navigate('/admin');
+    } catch (error) {
+      console.error('EditArticle: Update error:', error);
+      const message = error instanceof Error ? error.message : 'Failed to update article';
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
+      if (message.includes('token')) {
+        localStorage.removeItem('admin_token');
+        navigate('/admin/login');
+      }
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   if (isLoading) {
@@ -81,19 +173,6 @@ const EditArticle: React.FC = () => {
       <MainLayout>
         <div className="container py-12">
           <LoadingSpinner />
-        </div>
-      </MainLayout>
-    );
-  }
-
-  if (!article) {
-    return (
-      <MainLayout>
-        <div className="container py-12">
-          <h1>Article not found</h1>
-          <Link to="/admin">
-            <Button className="mt-4">Back to Admin Portal</Button>
-          </Link>
         </div>
       </MainLayout>
     );
@@ -132,7 +211,9 @@ const EditArticle: React.FC = () => {
               <label htmlFor="title" className="text-sm font-medium">Title</label>
               <Input 
                 id="title" 
-                defaultValue={article.title} 
+                name="title"
+                value={formData.title} 
+                onChange={handleChange}
                 required 
                 className="focus:ring-red-600 transition-all"
               />
@@ -142,7 +223,9 @@ const EditArticle: React.FC = () => {
               <label htmlFor="category" className="text-sm font-medium">Category</label>
               <Input 
                 id="category" 
-                defaultValue={article.category} 
+                name="category"
+                value={formData.category} 
+                onChange={handleChange}
                 required 
                 className="focus:ring-red-600 transition-all"
               />
@@ -152,7 +235,9 @@ const EditArticle: React.FC = () => {
               <label htmlFor="excerpt" className="text-sm font-medium">Excerpt</label>
               <Textarea 
                 id="excerpt" 
-                defaultValue={article.excerpt} 
+                name="excerpt"
+                value={formData.excerpt} 
+                onChange={handleChange}
                 required 
                 className="focus:ring-red-600 transition-all"
               />
@@ -162,7 +247,9 @@ const EditArticle: React.FC = () => {
               <label htmlFor="content" className="text-sm font-medium">Content</label>
               <Textarea 
                 id="content" 
-                defaultValue={article.content} 
+                name="content"
+                value={formData.content} 
+                onChange={handleChange}
                 className="min-h-[200px] focus:ring-red-600 transition-all"
                 required 
               />
@@ -172,17 +259,26 @@ const EditArticle: React.FC = () => {
               <label htmlFor="image" className="text-sm font-medium">Image URL</label>
               <Input 
                 id="image" 
-                defaultValue={article.image} 
+                name="image"
+                type="url"
+                value={formData.image} 
+                onChange={handleChange}
+                placeholder="https://picsum.photos/400/300"
                 required 
                 className="focus:ring-red-600 transition-all"
               />
+              {formData.image && (
+                <p className="text-sm text-gray-500 mt-1">Preview URL: <a href={formData.image} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{formData.image}</a></p>
+              )}
             </div>
             
             <div className="space-y-2">
               <label htmlFor="author" className="text-sm font-medium">Author</label>
               <Input 
                 id="author" 
-                defaultValue={article.author} 
+                name="author"
+                value={formData.author} 
+                onChange={handleChange}
                 required 
                 className="focus:ring-red-600 transition-all"
               />

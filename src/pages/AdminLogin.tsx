@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -14,31 +13,45 @@ const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Admin credentials
-    setTimeout(() => {
-      if (username === 'prat754' && password === '#@Pg21pa') {
-        // Set a token in localStorage to simulate authentication
-        localStorage.setItem('admin_token', 'admin_authenticated');
-        
+
+    try {
+      console.log('Sending payload:', JSON.stringify({ username, password }));
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          username: username.trim(), 
+          password: password.trim() 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('admin_token', data.token);
+        console.log('Token stored:', data.token); // Debug token
         toast({
           title: "Login successful",
           description: "Welcome to the admin dashboard!",
         });
-        
         navigate('/admin');
       } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid username or password",
-          variant: "destructive"
-        });
+        throw new Error(`${data.error || 'Invalid credentials'} (Status: ${response.status})`);
       }
+    } catch (error: unknown) {
+      console.error('Login error:', error);
+      const message = error instanceof Error ? error.message : 'An error occurred';
+      toast({
+        title: "Login failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

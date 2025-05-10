@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import NewsCard from './NewsCard';
@@ -15,12 +14,12 @@ interface CategoryNewsProps {
     image: string;
     category: string;
     date: string;
-    path: string;
+    isBreaking: boolean;
   }[];
 }
 
 const CategoryNews: React.FC<CategoryNewsProps> = ({ category, articles }) => {
-  if (!articles || articles.length === 0) return null;
+  console.log(`CategoryNews (${category.name}): articles:`, articles);
 
   return (
     <section className="py-8 border-t border-gray-200">
@@ -38,19 +37,31 @@ const CategoryNews: React.FC<CategoryNewsProps> = ({ category, articles }) => {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {articles.map((article, index) => (
-            <div 
-              key={article.id}
-              className="animate-slide-in-bottom hover-lift"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <NewsCard 
-                {...article}
-              />
-            </div>
-          ))}
-        </div>
+        {(!articles || articles.length === 0) ? (
+          <div className="text-gray-600 text-lg">
+            No articles available for {category.name}.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {articles.map((article, index) => (
+              <div 
+                key={article.id}
+                className="animate-slide-in-bottom hover-lift"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <NewsCard 
+                  id={article.id}
+                  title={article.title}
+                  excerpt={article.excerpt}
+                  image={article.image}
+                  category={article.category}
+                  date={article.date}
+                  path={`/article/${article.id}`}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

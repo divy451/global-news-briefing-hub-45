@@ -1,26 +1,19 @@
-
 import React from 'react';
 import NewsCard from './NewsCard';
 
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  date: string;
+  path?: string;
+}
+
 interface FeaturedNewsProps {
-  mainArticle: {
-    id: string;
-    title: string;
-    excerpt: string;
-    image: string;
-    category: string;
-    date: string;
-    path: string;
-  };
-  secondaryArticles: {
-    id: string;
-    title: string;
-    excerpt: string;
-    image: string;
-    category: string;
-    date: string;
-    path: string;
-  }[];
+  mainArticle: Article;
+  secondaryArticles: Article[];
 }
 
 const FeaturedNews: React.FC<FeaturedNewsProps> = ({ mainArticle, secondaryArticles }) => {
@@ -37,7 +30,13 @@ const FeaturedNews: React.FC<FeaturedNewsProps> = ({ mainArticle, secondaryArtic
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 animate-slide-in-left">
             <NewsCard 
-              {...mainArticle}
+              id={mainArticle.id}
+              title={mainArticle.title}
+              excerpt={mainArticle.excerpt}
+              image={mainArticle.image}
+              category={mainArticle.category}
+              date={mainArticle.date}
+              path={mainArticle.path || `/article/${mainArticle.id}`}
               featured={true}
             />
           </div>
@@ -50,7 +49,13 @@ const FeaturedNews: React.FC<FeaturedNewsProps> = ({ mainArticle, secondaryArtic
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <NewsCard 
-                  {...article}
+                  id={article.id}
+                  title={article.title}
+                  excerpt={article.excerpt}
+                  image={article.image}
+                  category={article.category}
+                  date={article.date}
+                  path={article.path || `/article/${article.id}`}
                   horizontal={true}
                   compact={true}
                 />

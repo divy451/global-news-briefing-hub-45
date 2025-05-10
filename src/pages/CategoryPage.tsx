@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
@@ -45,7 +44,7 @@ const CategoryPage: React.FC = () => {
                   ))}
                 </div>
                 
-                <Advertisement type="banner" />
+                <Advertisement type="banner" adSlot="4095088830" />
                 
                 {articles.length > 8 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">

@@ -1,14 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useIsMobile } from '../../hooks/use-mobile';
+import { BreakingNewsItem } from '@/types/news';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BreakingNewsProps {
-  news: {
-    id: string;
-    title: string;
-    path: string;
-  }[];
+  news: BreakingNewsItem[];
 }
 
 const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
@@ -22,11 +18,21 @@ const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
       setTimeout(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % news.length);
         setIsAnimating(false);
-      }, 700); // Slightly longer fade duration for smoother transition
-    }, 6000); // Longer display time for better readability
+      }, 700);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [news.length]);
+
+  if (!news || news.length === 0) {
+    return (
+      <div className="bg-red-600 dark:bg-red-800 text-white py-2 px-4">
+        <div className="container">
+          <p>No breaking news available.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-red-600 dark:bg-red-800 text-white py-2 px-4">
@@ -35,7 +41,7 @@ const BreakingNews: React.FC<BreakingNewsProps> = ({ news }) => {
           <div className="font-bold mr-3 whitespace-nowrap">BREAKING:</div>
           <div className="overflow-hidden flex-1">
             <div className={`transition-all duration-700 ${isAnimating ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>
-              <Link to={news[currentIndex].path} className="hover:underline inline-block">
+              <Link to={`/article/${news[currentIndex].id}`} className="hover:underline inline-block">
                 {isMobile && news[currentIndex].title.length > 60 
                   ? `${news[currentIndex].title.substring(0, 60)}...` 
                   : news[currentIndex].title}

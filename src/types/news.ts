@@ -3,11 +3,12 @@ export interface Article {
   title: string;
   excerpt: string;
   content: string;
-  image: string;
+  image: string; // Path to uploaded image, e.g., /uploads/image.jpg
   category: string;
   date: string;
   author: string;
-  path: string;
+  path?: string;
+  isBreaking: boolean;
 }
 
 export interface Category {
@@ -19,14 +20,9 @@ export interface Category {
 export interface BreakingNewsItem {
   id: string;
   title: string;
-  path: string;
-}
-
-export interface AdminArticleUpdate {
-  title: string;
-  excerpt: string;
-  content: string;
-  image: string;
   category: string;
-  author: string;
+  date: string;
+  image: string; // Path to uploaded image, e.g., /uploads/image.jpg
+  path?: string;
+  isBreaking: boolean;
 }

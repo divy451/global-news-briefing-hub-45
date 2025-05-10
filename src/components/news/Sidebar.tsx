@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,11 +6,18 @@ import { useTrendingArticles } from '@/hooks/useNewsData';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { formatRelativeTime } from '@/utils/formatDate';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  adSlot?: string;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ adSlot }) => {
   const { data: trendingArticles, isLoading } = useTrendingArticles();
 
   return (
     <aside className="space-y-8">
+      {/* Advertisement above Trending Now */}
+      {adSlot && <Advertisement type="square" adSlot={adSlot} />}
+      
       <section>
         <h3 className="text-xl font-bold mb-4 pb-2 border-b border-gray-200">
           Trending Now
@@ -22,32 +28,29 @@ const Sidebar: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {trendingArticles?.map((article, index) => (
-              <Card key={article.id} className="news-card hover:shadow-md transition-all duration-300">
-                <CardContent className="p-4">
-                  <div className="flex items-start">
-                    <div className="text-2xl font-bold text-red-600 mr-4 animate-bounce-subtle">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <Link 
-                        to={article.path} 
-                        className="font-medium hover:text-red-600 transition-colors"
-                      >
-                        {article.title}
-                      </Link>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {formatRelativeTime(article.date)}
+              <Link to={article.path} key={article.id} className="block">
+                <Card className="news-card hover:shadow-md transition-all duration-300">
+                  <CardContent className="p-4">
+                    <div className="flex items-start">
+                      <div className="text-2xl font-bold text-red-600 mr-4 animate-bounce-subtle">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <div className="font-medium hover:text-red-600 transition-colors">
+                          {article.title}
+                        </div>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {formatRelativeTime(article.date)}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
       </section>
-
-      <Advertisement type="square" />
       
       <section>
         <h3 className="text-xl font-bold mb-4 pb-2 border-b border-gray-200">

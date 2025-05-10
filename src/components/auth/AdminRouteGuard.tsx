@@ -1,25 +1,24 @@
-
 import React, { useEffect, useState } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const AdminRouteGuard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  
+
   useEffect(() => {
-    // Check if admin token exists
     const token = localStorage.getItem('admin_token');
-    
-    if (token === 'admin_authenticated') {
+    console.log('AdminRouteGuard: Token check:', token); // Debug token
+    if (token) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
+      console.log('AdminRouteGuard: No token, redirecting to login');
       toast({
         title: "Authentication required",
         description: "Please log in to access the admin area",
+        variant: "destructive",
       });
     }
   }, [toast]);
